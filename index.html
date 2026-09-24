@@ -2,8 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+
     <meta name="viewport"
-          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+          content="width=device-width,
+                   initial-scale=1.0,
+                   maximum-scale=1.0,
+                   user-scalable=no">
 
     <title>Subway Surfers</title>
 
@@ -19,35 +23,241 @@
             height: 100%;
             overflow: hidden;
             background: #000;
+            font-family: Arial, sans-serif;
         }
 
-        .madkidgames-embed {
+        /* =========================
+           GAME FULL SCREEN
+        ========================== */
+
+        #gameContainer {
             position: fixed;
-            top: 0;
-            left: 0;
+            inset: 0;
             width: 100vw;
             height: 100vh;
+            z-index: 1;
+            background: #000;
         }
 
-        .madkidgames-embed iframe {
+        #gameFrame {
             width: 100%;
             height: 100%;
             border: 0;
             display: block;
         }
 
-        /* نخبيو attribution باش اللعبة تستعمل الشاشة كاملة */
+        /* =========================
+           ADS OVERLAY
+        ========================== */
+
+        #adsOverlay {
+            position: fixed;
+            inset: 0;
+
+            width: 100vw;
+            height: 100vh;
+
+            display: none;
+
+            align-items: center;
+            justify-content: center;
+
+            z-index: 999999;
+
+            background: rgba(0, 0, 0, 0.82);
+
+            padding: 0;
+        }
+
+        #adsOverlay.show {
+            display: flex;
+        }
+
+        /* =========================
+           AD CONTENT
+        ========================== */
+
+        #adContent {
+            position: relative;
+
+            width: 100%;
+            height: 100%;
+
+            display: flex;
+            flex-direction: column;
+
+            align-items: center;
+            justify-content: center;
+
+            overflow: hidden;
+        }
+
+        /* =========================
+           IMAGE
+        ========================== */
+
+        .ad-image {
+            display: block;
+
+            max-width: 90vw;
+            max-height: 78vh;
+
+            width: auto;
+            height: auto;
+
+            object-fit: contain;
+
+            cursor: pointer;
+        }
+
+        /* =========================
+           VIDEO
+        ========================== */
+
+        .ad-video {
+            display: block;
+
+            max-width: 90vw;
+            max-height: 78vh;
+
+            width: auto;
+            height: auto;
+
+            object-fit: contain;
+
+            background: #000;
+
+            cursor: pointer;
+        }
+
+        /* =========================
+           TEXT
+        ========================== */
+
+        .ad-text {
+            color: #fff;
+
+            font-size: 22px;
+            font-weight: bold;
+
+            text-align: center;
+
+            margin: 12px;
+
+            max-width: 90%;
+        }
+
+        /* =========================
+           BUTTON
+        ========================== */
+
+        .ad-button {
+            display: inline-flex;
+
+            align-items: center;
+            justify-content: center;
+
+            min-width: 180px;
+            min-height: 52px;
+
+            margin-top: 15px;
+
+            padding: 12px 25px;
+
+            background: #FFD400;
+            color: #000;
+
+            border: 0;
+            border-radius: 12px;
+
+            font-size: 18px;
+            font-weight: bold;
+
+            text-decoration: none;
+
+            cursor: pointer;
+        }
+
+        .ad-button:focus {
+            outline: 4px solid #fff;
+            outline-offset: 4px;
+        }
+
+        /* =========================
+           COUNTDOWN
+        ========================== */
+
+        #countdown {
+            position: fixed;
+
+            top: 18px;
+            right: 18px;
+
+            z-index: 1000001;
+
+            width: 55px;
+            height: 55px;
+
+            border-radius: 50%;
+
+            background: rgba(0, 0, 0, 0.75);
+
+            border: 3px solid #fff;
+
+            color: #fff;
+
+            display: none;
+
+            align-items: center;
+            justify-content: center;
+
+            font-size: 20px;
+            font-weight: bold;
+
+            pointer-events: none;
+        }
+
+        /* hide attribution */
         .game-credit {
             display: none;
+        }
+
+        @media (max-width: 600px) {
+
+            .ad-image,
+            .ad-video {
+                max-width: 95vw;
+                max-height: 75vh;
+            }
+
+            #countdown {
+                width: 48px;
+                height: 48px;
+
+                font-size: 17px;
+            }
+
+            .ad-button {
+                min-width: 150px;
+                min-height: 48px;
+
+                font-size: 16px;
+            }
         }
     </style>
 </head>
 
 <body>
 
-<div class="madkidgames-embed">
+
+<!-- ==========================================
+     GAME
+=========================================== -->
+
+<div id="gameContainer">
 
     <iframe
+        id="gameFrame"
         src="https://www.madkidgames.com/full/subway-surfers"
         allow="fullscreen; autoplay"
         allowfullscreen
@@ -55,21 +265,1225 @@
         referrerpolicy="no-referrer-when-downgrade">
     </iframe>
 
-    <p class="game-credit">
-        <a href="https://www.madkidgames.com/game/subway-surfers"
-           target="_blank"
-           rel="noopener noreferrer">
-            Play Subway Surfers
-        </a>
-    </p>
+</div>
 
-    <noscript>
-        <a href="https://www.madkidgames.com/game/subway-surfers">
-            Play Subway Surfers
-        </a>
-    </noscript>
+
+<!-- ==========================================
+     ADS OVERLAY
+=========================================== -->
+
+<div id="adsOverlay">
+
+    <div id="adContent"></div>
 
 </div>
+
+
+<!-- COUNTDOWN -->
+
+<div id="countdown">20</div>
+
+
+<script>
+
+(function () {
+
+    "use strict";
+
+
+    /* ==========================================
+       GLOBAL VARIABLES
+    =========================================== */
+
+    let adsConfig = null;
+
+    let currentAdIndex = 0;
+
+    let showTimer = null;
+
+    let repeatTimer = null;
+
+    let countdownTimer = null;
+
+    let adIsShowing = false;
+
+
+    const overlay =
+        document.getElementById("adsOverlay");
+
+    const adContent =
+        document.getElementById("adContent");
+
+    const countdownElement =
+        document.getElementById("countdown");
+
+
+    /* ==========================================
+       LOAD ads.json
+    =========================================== */
+
+    async function loadAdsConfig() {
+
+        try {
+
+            /*
+             * ads.json is beside index.html
+             *
+             * index.html
+             * ads.json
+             * assets/
+             */
+
+            const jsonURL =
+                "./ads.json?t=" + Date.now();
+
+
+            console.log(
+                "Loading ads config:",
+                jsonURL
+            );
+
+
+            const response =
+                await fetch(jsonURL, {
+
+                    method: "GET",
+
+                    cache: "no-store",
+
+                    headers: {
+                        "Accept": "application/json"
+                    }
+
+                });
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "HTTP " +
+                    response.status
+                );
+
+            }
+
+
+            const config =
+                await response.json();
+
+
+            console.log(
+                "ads.json loaded:",
+                config
+            );
+
+
+            adsConfig = config;
+
+
+            initializeAds();
+
+
+        } catch (error) {
+
+            console.error(
+                "Failed to load ads.json:",
+                error
+            );
+
+        }
+
+    }
+
+
+    /* ==========================================
+       INITIALIZE ADS
+    =========================================== */
+
+    function initializeAds() {
+
+        if (!adsConfig) {
+
+            console.log(
+                "No ads config."
+            );
+
+            return;
+
+        }
+
+
+        if (adsConfig.enabled === false) {
+
+            console.log(
+                "Ads disabled."
+            );
+
+            return;
+
+        }
+
+
+        if (
+            !Array.isArray(adsConfig.ads) ||
+            adsConfig.ads.length === 0
+        ) {
+
+            console.log(
+                "No ads available."
+            );
+
+            return;
+
+        }
+
+
+        const initialDelay =
+            Number(
+                adsConfig.initialDelaySeconds
+            ) || 0;
+
+
+        console.log(
+            "First ad after:",
+            initialDelay,
+            "seconds"
+        );
+
+
+        setTimeout(function () {
+
+            showNextAd();
+
+        }, initialDelay * 1000);
+
+    }
+
+
+    /* ==========================================
+       GET ENABLED ADS
+    =========================================== */
+
+    function getEnabledAds() {
+
+        if (
+            !adsConfig ||
+            !Array.isArray(adsConfig.ads)
+        ) {
+
+            return [];
+
+        }
+
+
+        return adsConfig.ads.filter(
+            function (ad) {
+
+                return ad.enabled !== false;
+
+            }
+        );
+
+    }
+
+
+    /* ==========================================
+       SELECT AD
+    =========================================== */
+
+    function selectAd() {
+
+        const ads =
+            getEnabledAds();
+
+
+        if (ads.length === 0) {
+
+            return null;
+
+        }
+
+
+        const mode =
+            adsConfig.behavior &&
+            adsConfig.behavior.selectionMode
+                ? adsConfig.behavior.selectionMode
+                : "sequence";
+
+
+        /* RANDOM */
+
+        if (mode === "random") {
+
+            const randomIndex =
+                Math.floor(
+                    Math.random() *
+                    ads.length
+                );
+
+
+            return ads[randomIndex];
+
+        }
+
+
+        /* SEQUENCE */
+
+        if (
+            currentAdIndex >=
+            ads.length
+        ) {
+
+            currentAdIndex = 0;
+
+        }
+
+
+        const ad =
+            ads[currentAdIndex];
+
+
+        currentAdIndex++;
+
+
+        return ad;
+
+    }
+
+
+    /* ==========================================
+       SHOW NEXT AD
+    =========================================== */
+
+    async function showNextAd() {
+
+        if (adIsShowing) {
+            return;
+        }
+
+
+        /*
+         * Refresh ads.json before every ad
+         * if enabled in JSON.
+         */
+
+        const refresh =
+            adsConfig &&
+            adsConfig.behavior &&
+            adsConfig.behavior
+                .refreshConfigBeforeShow === true;
+
+
+        if (refresh) {
+
+            try {
+
+                const response =
+                    await fetch(
+                        "./ads.json?t=" +
+                        Date.now(),
+                        {
+                            cache: "no-store"
+                        }
+                    );
+
+
+                if (response.ok) {
+
+                    adsConfig =
+                        await response.json();
+
+                }
+
+            } catch (error) {
+
+                console.log(
+                    "Config refresh failed:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        if (
+            !adsConfig ||
+            adsConfig.enabled === false
+        ) {
+
+            return;
+
+        }
+
+
+        const ad =
+            selectAd();
+
+
+        if (!ad) {
+
+            return;
+
+        }
+
+
+        renderAd(ad);
+
+    }
+
+
+    /* ==========================================
+       RENDER AD
+    =========================================== */
+
+    function renderAd(ad) {
+
+        adIsShowing = true;
+
+
+        /* clear old content */
+
+        adContent.innerHTML = "";
+
+
+        /* overlay configuration */
+
+        applyOverlayConfig();
+
+
+        /* create elements */
+
+        if (
+            Array.isArray(ad.elements)
+        ) {
+
+            ad.elements.forEach(
+                function (element) {
+
+                    if (
+                        element.enabled === false
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    createAdElement(
+                        element
+                    );
+
+                }
+            );
+
+        }
+
+
+        /* show overlay */
+
+        overlay.classList.add(
+            "show"
+        );
+
+
+        /* countdown */
+
+        startCountdown();
+
+
+        /* duration */
+
+        const duration =
+            Number(
+                adsConfig
+                    .showDurationSeconds
+            ) || 20;
+
+
+        clearTimeout(showTimer);
+
+
+        showTimer =
+            setTimeout(
+                function () {
+
+                    closeAd();
+
+                },
+                duration * 1000
+            );
+
+    }
+
+
+    /* ==========================================
+       CREATE ELEMENT
+    =========================================== */
+
+    function createAdElement(element) {
+
+        if (!element.type) {
+            return;
+        }
+
+
+        const type =
+            String(
+                element.type
+            ).toLowerCase();
+
+
+        /* =====================
+           IMAGE / GIF
+        ====================== */
+
+        if (
+            type === "image" ||
+            type === "gif"
+        ) {
+
+            const img =
+                document.createElement(
+                    "img"
+                );
+
+
+            img.className =
+                "ad-image";
+
+
+            img.src =
+                element.src || "";
+
+
+            img.alt =
+                element.alt || "Advertisement";
+
+
+            applySize(
+                img,
+                element
+            );
+
+
+            makeClickable(
+                img,
+                element
+            );
+
+
+            adContent.appendChild(
+                img
+            );
+
+
+            return;
+
+        }
+
+
+        /* =====================
+           VIDEO
+        ====================== */
+
+        if (type === "video") {
+
+            const video =
+                document.createElement(
+                    "video"
+                );
+
+
+            video.className =
+                "ad-video";
+
+
+            video.src =
+                element.src || "";
+
+
+            video.autoplay = true;
+
+            video.muted =
+                element.muted !== false;
+
+            video.playsInline = true;
+
+            video.loop =
+                element.loop === true;
+
+
+            video.setAttribute(
+                "webkit-playsinline",
+                ""
+            );
+
+
+            applySize(
+                video,
+                element
+            );
+
+
+            makeClickable(
+                video,
+                element
+            );
+
+
+            adContent.appendChild(
+                video
+            );
+
+
+            video.play().catch(
+                function (error) {
+
+                    console.log(
+                        "Video autoplay:",
+                        error
+                    );
+
+                }
+            );
+
+
+            return;
+
+        }
+
+
+        /* =====================
+           TEXT
+        ====================== */
+
+        if (type === "text") {
+
+            const text =
+                document.createElement(
+                    "div"
+                );
+
+
+            text.className =
+                "ad-text";
+
+
+            text.textContent =
+                element.text || "";
+
+
+            if (element.color) {
+
+                text.style.color =
+                    element.color;
+
+            }
+
+
+            if (element.fontSize) {
+
+                text.style.fontSize =
+                    element.fontSize;
+
+            }
+
+
+            makeClickable(
+                text,
+                element
+            );
+
+
+            adContent.appendChild(
+                text
+            );
+
+
+            return;
+
+        }
+
+
+        /* =====================
+           BUTTON
+        ====================== */
+
+        if (type === "button") {
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+
+            button.className =
+                "ad-button";
+
+
+            button.type =
+                "button";
+
+
+            button.textContent =
+                element.text ||
+                element.label ||
+                "Download App";
+
+
+            if (
+                element.backgroundColor
+            ) {
+
+                button.style
+                    .backgroundColor =
+                    element
+                        .backgroundColor;
+
+            }
+
+
+            if (element.color) {
+
+                button.style.color =
+                    element.color;
+
+            }
+
+
+            makeClickable(
+                button,
+                element
+            );
+
+
+            adContent.appendChild(
+                button
+            );
+
+
+            return;
+
+        }
+
+    }
+
+
+    /* ==========================================
+       SIZE FROM JSON
+    =========================================== */
+
+    function applySize(
+        element,
+        config
+    ) {
+
+        if (
+            config.widthPercent
+        ) {
+
+            element.style.width =
+                config.widthPercent +
+                "%";
+
+        }
+
+
+        if (
+            config.heightPercent
+        ) {
+
+            element.style.height =
+                config.heightPercent +
+                "%";
+
+        }
+
+
+        if (config.maxWidth) {
+
+            element.style.maxWidth =
+                config.maxWidth;
+
+        }
+
+
+        if (config.maxHeight) {
+
+            element.style.maxHeight =
+                config.maxHeight;
+
+        }
+
+    }
+
+
+    /* ==========================================
+       CLICK / AMAZON DEEP LINK
+    =========================================== */
+
+    function makeClickable(
+        element,
+        config
+    ) {
+
+        const url =
+            config.url ||
+            config.link ||
+            config.href ||
+            config.deepLink ||
+            config.deeplink ||
+            config.clickUrl ||
+            config.clickURL;
+
+
+        if (!url) {
+            return;
+        }
+
+
+        element.style.cursor =
+            "pointer";
+
+
+        element.setAttribute(
+            "tabindex",
+            "0"
+        );
+
+
+        element.addEventListener(
+            "click",
+            function () {
+
+                openLink(url);
+
+            }
+        );
+
+
+        /*
+         * Fire TV remote:
+         * Enter / Center DPAD
+         */
+
+        element.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (
+                    event.key ===
+                        "Enter" ||
+                    event.keyCode ===
+                        13 ||
+                    event.keyCode ===
+                        23
+                ) {
+
+                    event.preventDefault();
+
+                    openLink(url);
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* ==========================================
+       OPEN LINK
+    =========================================== */
+
+    function openLink(url) {
+
+        if (!url) {
+            return;
+        }
+
+
+        console.log(
+            "Opening:",
+            url
+        );
+
+
+        try {
+
+            window.location.href =
+                url;
+
+        } catch (error) {
+
+            console.error(
+                "Cannot open link:",
+                error
+            );
+
+        }
+
+    }
+
+
+    /* ==========================================
+       OVERLAY CONFIG
+    =========================================== */
+
+    function applyOverlayConfig() {
+
+        const config =
+            adsConfig.overlay || {};
+
+
+        if (config.scrimColor) {
+
+            overlay.style.background =
+                config.scrimColor;
+
+        }
+
+
+        if (
+            config.paddingDp !==
+            undefined
+        ) {
+
+            overlay.style.padding =
+                Number(
+                    config.paddingDp
+                ) + "px";
+
+        }
+
+
+        const gravity =
+            config.gravity ||
+            "center";
+
+
+        if (
+            gravity === "top"
+        ) {
+
+            overlay.style
+                .alignItems =
+                "flex-start";
+
+        } else if (
+            gravity === "bottom"
+        ) {
+
+            overlay.style
+                .alignItems =
+                "flex-end";
+
+        } else {
+
+            overlay.style
+                .alignItems =
+                "center";
+
+        }
+
+    }
+
+
+    /* ==========================================
+       COUNTDOWN
+    =========================================== */
+
+    function startCountdown() {
+
+        clearInterval(
+            countdownTimer
+        );
+
+
+        const config =
+            adsConfig.countdown ||
+            {};
+
+
+        if (
+            config.enabled === false
+        ) {
+
+            countdownElement
+                .style.display =
+                "none";
+
+            return;
+
+        }
+
+
+        let seconds =
+            Number(
+                config.seconds
+            );
+
+
+        if (
+            !seconds ||
+            seconds <= 0
+        ) {
+
+            seconds =
+                Number(
+                    adsConfig
+                        .showDurationSeconds
+                ) || 20;
+
+        }
+
+
+        countdownElement
+            .style.display =
+            "flex";
+
+
+        countdownElement
+            .textContent =
+            seconds;
+
+
+        countdownTimer =
+            setInterval(
+                function () {
+
+                    seconds--;
+
+
+                    if (
+                        seconds <= 0
+                    ) {
+
+                        countdownElement
+                            .textContent =
+                            "0";
+
+
+                        clearInterval(
+                            countdownTimer
+                        );
+
+
+                        if (
+                            config
+                                .autoCloseAtZero ===
+                            true
+                        ) {
+
+                            closeAd();
+
+                        }
+
+
+                        return;
+
+                    }
+
+
+                    countdownElement
+                        .textContent =
+                        seconds;
+
+                },
+                1000
+            );
+
+    }
+
+
+    /* ==========================================
+       CLOSE AD
+    =========================================== */
+
+    function closeAd() {
+
+        if (!adIsShowing) {
+            return;
+        }
+
+
+        adIsShowing = false;
+
+
+        clearTimeout(
+            showTimer
+        );
+
+
+        clearInterval(
+            countdownTimer
+        );
+
+
+        countdownElement
+            .style.display =
+            "none";
+
+
+        /*
+         * Stop video before removing it
+         */
+
+        const videos =
+            adContent.querySelectorAll(
+                "video"
+            );
+
+
+        videos.forEach(
+            function (video) {
+
+                try {
+
+                    video.pause();
+
+                    video.removeAttribute(
+                        "src"
+                    );
+
+                    video.load();
+
+                } catch (e) {}
+
+            }
+        );
+
+
+        overlay.classList.remove(
+            "show"
+        );
+
+
+        adContent.innerHTML = "";
+
+
+        scheduleNextAd();
+
+    }
+
+
+    /* ==========================================
+       NEXT AD
+    =========================================== */
+
+    function scheduleNextAd() {
+
+        clearTimeout(
+            repeatTimer
+        );
+
+
+        if (
+            !adsConfig ||
+            adsConfig.enabled === false
+        ) {
+
+            return;
+
+        }
+
+
+        const delay =
+            Number(
+                adsConfig
+                    .repeatEverySeconds
+            ) || 10;
+
+
+        console.log(
+            "Next ad in:",
+            delay,
+            "seconds"
+        );
+
+
+        repeatTimer =
+            setTimeout(
+                function () {
+
+                    showNextAd();
+
+                },
+                delay * 1000
+            );
+
+    }
+
+
+    /* ==========================================
+       OUTSIDE TAP
+    =========================================== */
+
+    overlay.addEventListener(
+        "click",
+        function (event) {
+
+            const config =
+                adsConfig &&
+                adsConfig.overlay
+                    ? adsConfig.overlay
+                    : {};
+
+
+            if (
+                config
+                    .dismissOnOutsideTap ===
+                    true &&
+                event.target === overlay
+            ) {
+
+                closeAd();
+
+            }
+
+        }
+    );
+
+
+    /* ==========================================
+       START
+    =========================================== */
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
+
+            console.log(
+                "HTML started."
+            );
+
+
+            /*
+             * Immediately call ads.json
+             */
+
+            loadAdsConfig();
+
+        }
+    );
+
+
+})();
+
+</script>
+
+
+<!-- FALLBACK -->
+
+<noscript>
+
+    <a href="https://www.madkidgames.com/game/subway-surfers">
+        Play Subway Surfers
+    </a>
+
+</noscript>
+
 
 </body>
 </html>
