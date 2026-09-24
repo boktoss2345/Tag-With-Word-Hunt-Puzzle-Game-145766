@@ -1,29 +1,75 @@
-<!-- HTML5 Game Iframe Embed Code – START -->
-<div class="madkidgames-embed" style="max-width:960px;margin:0 auto;">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-  <!-- Game iframe -->
-  <iframe
-    src="https://www.madkidgames.com/full/subway-surfers"
-    width="100%"
-    height="540"
-    frameborder="0"
-    allowfullscreen
-    scrolling="no"
-    loading="lazy"
-    referrerpolicy="no-referrer-when-downgrade">
-  </iframe>
+    <title>Subway Surfers</title>
 
-  <!-- Attribution -->
-  <p class="game-credit" style="margin:8px 0 0;font-size:13px;line-height:1.4;text-align:center;">
-    <a href="https://www.madkidgames.com/game/subway-surfers" target="_blank" rel="noopener noreferrer">Play Subway Surfers</a>
-  </p>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-  <!-- Fallback for crawlers / no-JS -->
-  <noscript>
-    <p style="text-align:center;font-size:13px;">
-      <a href="https://www.madkidgames.com/game/subway-surfers">Play Subway Surfers</a>
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .madkidgames-embed {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .madkidgames-embed iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+            display: block;
+        }
+
+        /* نخبيو attribution باش اللعبة تستعمل الشاشة كاملة */
+        .game-credit {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="madkidgames-embed">
+
+    <iframe
+        src="https://www.madkidgames.com/full/subway-surfers"
+        allow="fullscreen; autoplay"
+        allowfullscreen
+        scrolling="no"
+        referrerpolicy="no-referrer-when-downgrade">
+    </iframe>
+
+    <p class="game-credit">
+        <a href="https://www.madkidgames.com/game/subway-surfers"
+           target="_blank"
+           rel="noopener noreferrer">
+            Play Subway Surfers
+        </a>
     </p>
-  </noscript>
+
+    <noscript>
+        <a href="https://www.madkidgames.com/game/subway-surfers">
+            Play Subway Surfers
+        </a>
+    </noscript>
 
 </div>
-<!-- HTML5 Game Iframe Embed Code – END -->
+
+</body>
+</html>
