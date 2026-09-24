@@ -47,7 +47,7 @@
         {
           "type": "button",
           "enabled": true,
-          "text": "DOWNLOAD\nPlay Now",
+          "text": "DOWNLOAD\nPlay Roblox",
           "widthPercent": 82,
           "maxWidthDp": 420,
           "marginDp": 12,
@@ -92,7 +92,7 @@
         {
           "type": "button",
           "enabled": true,
-          "text": "DOWNLOAD\nGet Funny Game",
+          "text": "DOWNLOAD\nTag With Ryan",
           "widthPercent": 82,
           "maxWidthDp": 420,
           "marginDp": 12,
@@ -137,7 +137,7 @@
         {
           "type": "button",
           "enabled": true,
-          "text": "DOWNLOAD\nGoo Fast",
+          "text": "DOWNLOAD\nMinecraft",
           "widthPercent": 82,
           "maxWidthDp": 420,
           "marginDp": 12,
